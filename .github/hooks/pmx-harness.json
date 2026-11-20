@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "command": "python3 .claude/hooks/protect_paths.py",
+        "bash": "python3 .claude/hooks/protect_paths.py",
+        "timeoutSec": 10
+      }
+    ],
+    "sessionStart": [
+      {
+        "type": "command",
+        "command": "python3 .claude/hooks/session_mandate.py",
+        "bash": "python3 .claude/hooks/session_mandate.py",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+# Public method manifest (schema v2).
+# Local confirmation is required for an approved unit to run.
+skill: forest-plots
+generated_at: 2026-11-20T08:45:38Z
+reviewed_by: ""
+reviewed_at: ""
+units:
+  forest:
+    status: draft
+    reference_path: skills/forest-plots/reference/forest.R
+    entrypoints: [reference_forest_covstats, reference_forest_covgrid, reference_forest_samples, reference_forest_samples_nlmixr, reference_forest_verify, reference_forest_parametric, reference_forest_empirical, reference_forest_plot]
+    sha256: sha256:6b46a4ea69244ca069707ce8b4cccc56a1bcb24ee6ba4317d47b273f02162cd8
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"

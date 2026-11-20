@@ -1,0 +1,21 @@
+{{marker}}
+{
+{{rationale}}
+  "[markdown]": {
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "files.trimTrailingWhitespace": false,
+    "files.insertFinalNewline": false,
+    "files.trimFinalNewlines": false,
+    "editor.wordWrap": "on"
+  },
+{{barrier}}  // Hooks are the editor-side write guard and mandate injection
+  // (.github/hooks/). `chat.useHooks` defaults to true at VS Code main, but a
+  // live check on 2026-09-02 found it switched off in an installed build, so
+  // the workspace pins it (restricted: honoured once the workspace is trusted).
+  // Claude-format hooks stay off: their command shape and matchers differ.
+  // If the checkbox is greyed out as "managed by your organization", enterprise
+  // policy disables hooks and this pin is inert (docs/PORTABILITY.md).
+  "chat.useHooks": true,
+  "chat.useClaudeHooks": false
+}

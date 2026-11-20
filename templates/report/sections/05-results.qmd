@@ -1,0 +1,10 @@
+# Results
+
+The report draws on the following stage packages.
+
+```{r}
+#| echo: false
+#| results: asis
+packages <- tar_read(report_stage_packages, store = store)
+cat(paste0("- ", names(packages)), sep = "\n")
+```

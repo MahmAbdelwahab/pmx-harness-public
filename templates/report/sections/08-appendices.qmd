@@ -1,0 +1,13 @@
+# Appendices {.unnumbered}
+
+## E. Recorded review notes {.unnumbered}
+
+```{r}
+#| echo: false
+#| results: asis
+source("tools/evidence_notes.R", local = TRUE)
+source("tools/report_typography.R", local = TRUE)
+packages <- tar_read(report_stage_packages, store = store)
+notes <- unlist(lapply(packages, function(package) package$notes), recursive = FALSE)
+cat(protect_dollars(note_text(notes)), sep = "\n\n")
+```

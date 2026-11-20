@@ -1,0 +1,35 @@
+# Public method manifest (schema v2).
+# Local confirmation is required for an approved unit to run.
+skill: simulation-standards
+generated_at: 2026-11-20T08:45:38Z
+reviewed_by: ""
+reviewed_at: ""
+units:
+  bound_comparison:
+    status: draft
+    reference_path: skills/simulation-standards/reference/bound_comparison.R
+    entrypoints: [reference_bound_verdict]
+    sha256: sha256:79aa0febc3360ed59542230238e3535c59259b2d0c76b8b63b3d847b9571e7e0
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  exposure_metrics:
+    status: draft
+    reference_path: skills/simulation-standards/reference/exposure_metrics.R
+    entrypoints: [reference_exposure_by_subject, reference_exposure_summary, reference_profile_summary]
+    sha256: sha256:f836fc0654f595e800d217c42576f7396ba50e39f09b71ba1490efb4e9f6b980
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  mrgsolve_sim:
+    status: draft
+    reference_path: skills/simulation-standards/reference/mrgsolve_sim.R
+    entrypoints: [reference_sim_compile, reference_sim_translate_check, reference_sim_physical_checks, reference_simulate]
+    sha256: sha256:83cf1e03066601e06520b0dd62e51bf9afb9ac6b2bf0382f6d3d5f844a56ef4b
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  uncertainty:
+    status: draft
+    reference_path: skills/simulation-standards/reference/uncertainty.R
+    entrypoints: [reference_sim_uncertainty_draws, reference_sim_install_check, reference_simulate_full, reference_sim_full_summary]
+    sha256: sha256:cd570511725452ebb4c442565ec51b721203f2c9cea17994dc628fc1505872a4
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"

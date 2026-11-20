@@ -1,0 +1,35 @@
+# Public method manifest (schema v2).
+# Local confirmation is required for an approved unit to run.
+skill: reference-models
+generated_at: 2026-11-20T08:45:38Z
+reviewed_by: ""
+reviewed_at: ""
+units:
+  onecmt_iv:
+    status: draft
+    reference_path: skills/reference-models/reference/onecmt_iv.ctl
+    entrypoints: [onecmt_iv.ctl]
+    sha256: sha256:a622ad58f6948bd7fdf9ebd1c164ff1d31a05c97f3c9b53dcde726e3d9aefa87
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  onecmt_oral:
+    status: draft
+    reference_path: skills/reference-models/reference/onecmt_oral.ctl
+    entrypoints: [onecmt_oral.ctl]
+    sha256: sha256:d8c31816770b674c8b699a34cf76ca133f29c0ee470ecd1c34ab30d5d7c33c15
+    evidence: ""
+    reason: "Draft method awaiting local review"
+  twocmt_iv:
+    status: draft
+    reference_path: skills/reference-models/reference/twocmt_iv.ctl
+    entrypoints: [twocmt_iv.ctl]
+    sha256: sha256:9ce5c501dcff8583004a155b5a425ba480b35447c5eefe44ac5b29bca89f44f7
+    evidence: ""
+    reason: "Draft method awaiting local review"
+  twocmt_oral:
+    status: draft
+    reference_path: skills/reference-models/reference/twocmt_oral.ctl
+    entrypoints: [twocmt_oral.ctl]
+    sha256: sha256:9629a6637d6c9ff98fc095387c477b0d0b99b4512353eb4746e1f182d4230a41
+    evidence: ""
+    reason: "Draft method awaiting local review"

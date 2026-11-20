@@ -1,0 +1,18 @@
+{{marker}}
+# EditorConfig — https://editorconfig.org
+#
+{{rationale}}
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+
+[*.md]
+# Never trim or rewrap markdown: trailing spaces are hard line breaks, and
+# gate records / signed documents are byte-exact.
+trim_trailing_whitespace = false
+insert_final_newline = false
+max_line_length = off
+{{extra}}

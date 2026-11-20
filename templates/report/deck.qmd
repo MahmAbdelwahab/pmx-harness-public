@@ -1,0 +1,27 @@
+---
+title: "Analysis Summary"
+params:
+  analysis_id: "ANALYSIS-ID"
+  store: "_targets_ANALYSIS-ID"
+  date: "YYYY-MM-DD"
+format: pptx
+---
+
+```{r setup}
+#| include: false
+library(targets)
+knitr::opts_knit$set(root.dir = here::here())
+store <- params$store
+```
+
+## Reviewed stages
+
+`r params$analysis_id`  
+`r params$date`
+
+```{r}
+#| echo: false
+#| results: asis
+packages <- tar_read(report_stage_packages, store = store)
+cat(paste0("- ", names(packages)), sep = "\n")
+```

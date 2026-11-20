@@ -1,0 +1,37 @@
+# Public method manifest (schema v2).
+# Local confirmation is required for an approved unit to run.
+skill: psn-uncertainty
+generated_at: 2026-11-20T08:45:38Z
+reviewed_by: ""
+reviewed_at: ""
+units:
+  bootstrap:
+    status: draft
+    reference_path: skills/psn-uncertainty/reference/psn_uncertainty.R
+    entrypoints: [reference_psn_bootstrap, reference_psn_bootstrap_precheck, reference_psn_bootstrap_samples]
+    sha256: sha256:fed14dfc14db8cf9546726e0c7910e4b6a3a95fbfada3a9c267e9d8a54b9f17c
+    depends:
+      - path: tools/psn_invocation.R
+        sha256: sha256:6b5b276d1d0ee204d5fda497d8c343163242a23bb1036914a6f0f3311e225769
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  llp:
+    status: draft
+    reference_path: skills/psn-uncertainty/reference/psn_uncertainty.R
+    entrypoints: [reference_psn_llp]
+    sha256: sha256:fed14dfc14db8cf9546726e0c7910e4b6a3a95fbfada3a9c267e9d8a54b9f17c
+    depends:
+      - path: tools/psn_invocation.R
+        sha256: sha256:6b5b276d1d0ee204d5fda497d8c343163242a23bb1036914a6f0f3311e225769
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  sir:
+    status: draft
+    reference_path: skills/psn-uncertainty/reference/psn_uncertainty.R
+    entrypoints: [reference_psn_sir]
+    sha256: sha256:fed14dfc14db8cf9546726e0c7910e4b6a3a95fbfada3a9c267e9d8a54b9f17c
+    depends:
+      - path: tools/psn_invocation.R
+        sha256: sha256:6b5b276d1d0ee204d5fda497d8c343163242a23bb1036914a6f0f3311e225769
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"

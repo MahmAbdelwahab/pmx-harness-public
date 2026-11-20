@@ -1,0 +1,14 @@
+# Public method manifest (schema v2).
+# Local confirmation is required for an approved unit to run.
+skill: nonmem-estimation
+generated_at: 2026-11-20T08:45:38Z
+reviewed_by: ""
+reviewed_at: ""
+units:
+  estimation:
+    status: draft
+    reference_path: skills/nonmem-estimation/reference/bbr_estimation.R
+    entrypoints: [reference_nm_workspace, reference_nm_fit, reference_nm_results]
+    sha256: sha256:d0c1f430b2b6a96010220cce9429e073d6318a1332947083eb1f0efcb4f36b91
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"

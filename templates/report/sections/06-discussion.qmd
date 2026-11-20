@@ -1,0 +1,9 @@
+# Discussion
+
+<!-- M15 App. 2: interpretation — data and model adequacy, limitations of
+data and model, clinical and/or other implications; MAP deviations; model
+evaluation outcomes (technical criteria, applicability); relevant
+nonclinical and clinical knowledge. House rule: separate what the
+analysis showed from what it implies; state limitations explicitly. -->
+
+*Section not yet drafted for this analysis.*

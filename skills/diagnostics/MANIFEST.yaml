@@ -1,0 +1,80 @@
+# Public method manifest (schema v2).
+# Local confirmation is required for an approved unit to run.
+skill: diagnostics
+generated_at: 2026-11-20T08:45:38Z
+reviewed_by: ""
+reviewed_at: ""
+units:
+  bootstrap:
+    status: draft
+    reference_path: skills/diagnostics/reference/bootstrap.R
+    entrypoints: [reference_bootstrap, reference_bootstrap_minimum_nboot]
+    sha256: sha256:325ac37071736651483ac43d452264beed2810ab33ecf1c9f4ae013b6fc67891
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  bootstrap_agreement:
+    status: draft
+    reference_path: skills/diagnostics/reference/bootstrap_agreement.R
+    entrypoints: [reference_bootstrap_pct_diff, reference_bootstrap_replicate_accounting, reference_bootstrap_unsuccessful_counts, reference_bootstrap_category_table, reference_bootstrap_iiv_rse, reference_bootstrap_fixed_rse, reference_bootstrap_ci_finite, reference_bootstrap_summaries, reference_bootstrap_back_transform]
+    sha256: sha256:e5b4e0908a9ca6a9dc2c038265b5d58b6693caca456ac2caedbeadd78f0557b5
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  gof:
+    status: draft
+    reference_path: skills/diagnostics/reference/gof.R
+    entrypoints: [reference_gof_panel, reference_gof_individual, reference_gof_ebe, reference_gof_param_cov]
+    sha256: sha256:47d8e2bb518df2bfb3c3238fe42ed6bd516ba6ae4b50e754535032775f5ed1bc
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  npde:
+    status: draft
+    reference_path: skills/diagnostics/reference/npde.R
+    entrypoints: [reference_npde, reference_npde_minimum_nsim]
+    sha256: sha256:127267e756424899aa12fde554613d23300bd609b879447de8299a0073649349
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  npde_panels:
+    status: draft
+    reference_path: skills/diagnostics/reference/npde_panels.R
+    entrypoints: [reference_npde_panels]
+    sha256: sha256:7374d154d24e55bb15e66200f38522a31aa37b08c797b035ce14073f0ab1ce3f
+    depends:
+      - path: skills/diagnostics/reference/npde.R
+        sha256: sha256:127267e756424899aa12fde554613d23300bd609b879447de8299a0073649349
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  npde_tests:
+    status: draft
+    reference_path: skills/diagnostics/reference/npde_tests.R
+    entrypoints: [reference_npde_global_tests]
+    sha256: sha256:ecff72ecd946cc21c58fa2db4c58af203cfdcd5bc708eb697d9a15c49906c58a
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  qualification_verdict:
+    status: draft
+    reference_path: skills/diagnostics/reference/qualification_verdict.R
+    entrypoints: [reference_qualification_verdict, reference_qualification_verdict_covstep]
+    sha256: sha256:7b09a58931332374b92c0360f7f89f40ee6691b49dcae8233b2483d92c89d8bc
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  vpc:
+    status: draft
+    reference_path: skills/diagnostics/reference/vpc.R
+    entrypoints: [reference_vpc_prepare, reference_vpc_attach_pred, reference_vpc_continuous, reference_vpc_categorical, reference_vpc_bincheck, reference_qpc]
+    sha256: sha256:24c84c151c7590fa895e0d6ae2af4d539d67a985af2eabab9e9fb5d123756580
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  vpc_coverage:
+    status: draft
+    reference_path: skills/diagnostics/reference/vpc_coverage.R
+    entrypoints: [reference_vpc_coverage]
+    sha256: sha256:18ad8c7c53501728e5ca76959c62bedf04d2f3fe90ccbf314b4a917c098e8eb0
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  vpc_strata:
+    status: draft
+    reference_path: skills/diagnostics/reference/vpc_strata.R
+    entrypoints: [reference_weight_bands]
+    sha256: sha256:538914ac8368da811eb5bbf1a9a9d350180df4f8971eb7b9b1697cec2067a90a
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"

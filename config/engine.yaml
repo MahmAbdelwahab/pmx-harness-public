@@ -1,0 +1,101 @@
+# Engine configuration and execution defaults.
+# Use the ignored harness.yaml for machine-local paths and image overrides.
+# Declare scientific choices in the analysis declaration and MAP, including
+# the analysis engine, sampling, stratification and criteria. Review settings
+# that can affect the fit, including the PsN retry controls below.
+#
+# Consumers: pipeline/compose.R (engine resolution), tools/
+# check_environment.R (provision probing), the bbr estimation lane
+# (bbi.yaml generation), PsN reference scripts (operational flags).
+
+engines:
+  # Default estimation engine when an analysis declares none.
+  default: nlmixr2
+
+  nlmixr2:
+    # In-process R engine; no external provision.
+    packages: [nlmixr2est, rxode2]
+
+  mrgsolve:
+    # In-process simulation engine, independent of the estimation engine.
+    packages: [mrgsolve]
+    role: simulation
+
+  nonmem:
+    provision: containerized          # containerized | native
+    # Executor dispatcher: routes to the container wrapper or, under the
+    # native provision, runs the site's validated NONMEM/PsN from PATH
+    # (regulated-environment mode; launch from a login shell or set
+    # nonmem_env_file in harness.yaml for batch contexts).
+    executor: tools/nonmem_exec.sh
+    # --- containerized provision ---
+    image: pmx-harness/nonmem:7.5.1   # override via NONMEM_IMAGE / harness.yaml
+    nm_version_label: docker75        # bbi.yaml nonmem entry key
+    shim_home: tools/nonmem_shim      # bbi 'home'; 'executable' below
+    shim_executable: nmfe75
+    # --- native provision ---
+    # The site NONMEM install path is MACHINE-LOCAL: it goes in
+    # harness.yaml (git-ignored) as `nonmem_home:`, never here. Only the
+    # executable name is operational:
+    native_executable: nmfe75
+
+# bbr / bbi operational settings (estimation lane).
+bbi:
+  # Submission mode passed to submit_model(): local | sge. bbi has no
+  # native slurm mode — on a slurm cluster run mode local inside an
+  # sbatch allocation, or use the PsN lane's run_on_slurm.
+  mode: local
+  # Operational-only bbi args applied to every submit; per-model
+  # overrides carry method meaning and belong in the analysis
+  # declaration, not here. parallel/threads/parafile control NONMEM MPI
+  # within a run (parafile path relative to the model directory).
+  args:
+    overwrite: false
+    threads: 1
+    parallel: false
+    parafile: null
+    # nodes (per-run key, drafted into run-config.yaml; no house value
+    # here): the MPI node count the SME approves for a bbi run. bbi v3.4.0
+    # has no --nodes flag — `bbi nonmem run local --help` documents
+    # --threads as "number of threads to execute with locally or nodes to
+    # execute on in parallel" — so with parallel: true the run-config
+    # loader requires nodes == threads == the parafile's NODES= line and
+    # stops otherwise. Default 1 (tools/engine_config.R). Documentation
+    # only; not read by bbr_estimation.R.
+
+# PsN operational settings (apply to every PsN tool call; method flags
+# such as -samples or -stratify_on are MAP-declared per analysis).
+# Translated to command-line flags at call time by the reference
+# scripts — psn.conf is site-owned and NEVER written by the harness;
+# explicit flags override its defaults, keeping every invocation
+# auditable in the gate package.
+psn:
+  # NONMEM version label from the site psn.conf [nm_versions] table
+  # (list them: `psn -nm_versions`); emitted as -nm_version= so every
+  # run DECLARES its NONMEM rather than inheriting the site default
+  # silently. null = psn.conf default (discouraged for reviewed runs).
+  nm_version: null
+  threads: 1          # -threads: concurrent MODEL runs (candidate-level)
+  # Retries can change the accepted minimum. Confirm this setting at run review.
+  retries: 3
+  # Perturbing initial estimates on retry can change which fit is reached.
+  tweak_inits: true
+  # Stricter termination criteria can change which runs are deemed successful.
+  picky: false
+  clean: null         # -clean level 0-3; null leaves the PsN default
+  model_subdir: null  # false emits -no-model_subdir; null leaves default
+  # --- submission (PsN 5.7.1 flags) ---
+  # local | sge | slurm | torque. Non-local emits -run_on_<grid> plus the
+  # matching options below.
+  submit: local
+  prepend_flags: null # -<grid>_prepend_flags="<value>", e.g. " -n 1"
+  queue: null         # sge_queue / slurm_partition / torque_queue
+  account: null       # slurm_account
+  # --- within-run NONMEM parallelization (MPI) ---
+  # nodes > 1 requires parafile; emitted as -nodes= and -parafile=.
+  # sir PROHIBITS MPI NONMEM (silent wrong-uncertainty failure): the sir
+  # runner DROPS nodes/parafile from these settings and records that it
+  # did, regardless of what is set here.
+  nodes: 1
+  parafile: null      # e.g. mpilinux8.pnm; resolved against the workdir
+  mpi: false          # legacy guard flag; kept in agreement with nodes=1

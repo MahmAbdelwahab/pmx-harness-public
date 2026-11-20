@@ -1,0 +1,49 @@
+# Public method manifest (schema v2).
+# Local confirmation is required for an approved unit to run.
+skill: covariate-priors
+generated_at: 2026-11-20T08:45:38Z
+reviewed_by: ""
+reviewed_at: ""
+units:
+  covariate_effect:
+    status: draft
+    reference_path: skills/covariate-priors/reference/covariate_effect.R
+    entrypoints: [reference_covariate_exposure_ratio]
+    sha256: sha256:cb56cf4d79147a475da29dd5f3be85341a11b09931d8a7a516d210e2b1c6de8d
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  covariate_search:
+    status: draft
+    reference_path: skills/covariate-priors/reference/covariate_search.R
+    entrypoints: [reference_covariate_search]
+    sha256: sha256:ef6e0cdd52f349370f7f47ed939bf4110280cc6321d64004ff4706b6fe953db9
+    evidence: ""
+    reason: "Draft method awaiting local review"
+  nested_lrt:
+    status: draft
+    reference_path: skills/covariate-priors/reference/nested_lrt.R
+    entrypoints: [reference_nested_lrt]
+    sha256: sha256:f7511179d414ca913a5046af6a25cb95868adb75170ce7abe53833333a35f6f9
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  psn_covsearch:
+    status: draft
+    reference_path: skills/covariate-priors/reference/psn_covsearch.R
+    entrypoints: [reference_psn_scmplus, reference_psn_boot_scm, reference_psn_xv_scm, reference_psn_lasso, reference_psn_frem]
+    sha256: sha256:9ac69e6b60ba1fc962ebe634f4822932e1b30c8c3c1a3983a50889f25c50bebc
+    depends:
+      - path: skills/psn-uncertainty/reference/psn_uncertainty.R
+        sha256: sha256:fed14dfc14db8cf9546726e0c7910e4b6a3a95fbfada3a9c267e9d8a54b9f17c
+      - path: skills/covariate-priors/reference/scm_config.R
+        sha256: sha256:215a65a3ee11f7380fb752dde153d03997418b387a932e16fdfa385a44a4fc77
+      - path: tools/psn_invocation.R
+        sha256: sha256:6b5b276d1d0ee204d5fda497d8c343163242a23bb1036914a6f0f3311e225769
+    evidence: ""
+    reason: "Draft method awaiting local review"
+  scm_config:
+    status: draft
+    reference_path: skills/covariate-priors/reference/scm_config.R
+    entrypoints: [reference_scm_config, reference_scm_config_backward]
+    sha256: sha256:215a65a3ee11f7380fb752dde153d03997418b387a932e16fdfa385a44a4fc77
+    evidence: ""
+    reason: "Draft method awaiting local review"

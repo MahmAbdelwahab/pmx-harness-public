@@ -1,0 +1,435 @@
+# Stock public PMx Harness adapter. Edit the profile and regenerate.
+schema = 1
+
+[project]
+name = "pmx-harness"
+summary = "A human-reviewed pharmacometrics workflow with deterministic computation."
+principal = "SME"
+depth_docs = ["CLAUDE.md", "docs/PORTABILITY.md"]
+roles_dir = "roles"
+dispatch_map_doc = "docs/PORTABILITY.md"
+contract = "contract.md"
+
+[orchestrator]
+inline_mandate = true
+reviewer_role = "pmx-reviewer"
+evidence_artifacts = "engine log, targets store, file"
+
+[protection]
+preamble = """The repository-local PreToolUse guard is wired in `.claude/settings.json`
+and `.github/hooks/pmx-harness.json`. Hook availability depends on the host's
+settings and policy. The guard covers editor-tool calls. Terminal commands
+run outside that interception. The pipeline verifies live artifact and
+manifest digests and ledger chains independently. The guard uses PyYAML to
+identify manifest-bound tools and refuses edits to `tools/*.R` when that
+dependency set cannot be established. Do not edit:"""
+
+[[do_not_edit]]
+path = "gates/**"
+reason = "Use the local gate tools for drafts, signed records, approvals and errata. The owner supplies the signature. This category is never unlocked."
+
+[[do_not_edit]]
+path = ["pipeline/compose.R", "tools/gate.R", "tools/gate_package.R", "tools/method_manifest.R", "tools/legacy_gates.yaml", "tools/approve_gate.R", "tools/load_reference.R", "tools/ci_check.R", "tools/errata.R", "tools/sign_approve_gate.R"]
+reason = "Protects gate composition, signed records, the legacy validation boundary, both ledgers, byte-bound methods and CI checks. Changes require the owner's temporary local unlock."
+
+[[do_not_edit]]
+path = ".claude/hooks/**"
+reason = "The owner controls the hooks and the .harness-unlock file from a terminal."
+
+[[do_not_edit]]
+path = ["skills/**/reference/**", "skills/**/MANIFEST.yaml", "tools/*.R"]
+reason = "Obtain the owner's authorization for changes to reviewed reference source or manifests and manifest-bound tools. Regenerate affected method bindings and obtain a fresh local review."
+
+[[instructions]]
+slug = "gates"
+apply_to = "gates/**"
+name = "Gate records are read-only"
+description = "The reviewer signs from the local gate tools."
+body = "instructions/gates.md"
+
+[[instructions]]
+slug = "reference-code"
+apply_to = "skills/**/reference/**"
+name = "Reference code and method manifests"
+description = "Check the method manifest and its local review before executing reference code."
+body = "instructions/reference-code.md"
+
+[[instructions]]
+slug = "task-modules"
+apply_to = "pipeline/tasks/**"
+name = "Task-module contract"
+description = "Declare task inputs, compute through targets, and build evidence with typed notes."
+body = "instructions/task-modules.md"
+
+[hooks]
+file = "pmx-harness"
+pre_tool_use = "python3 .claude/hooks/protect_paths.py"
+session_start = "python3 .claude/hooks/session_mandate.py"
+timeout_sec = 10
+
+[agents]
+source_dir = ".claude/agents"
+glob = "pmx-*.md"
+disable_model_invocation = ["pmx-reviewer"]
+disable_agent_file_locations = [".claude/agents"]
+
+[agents.models]
+opus = "Claude Opus 4.8"
+sonnet = "Claude Sonnet 4.5"
+haiku = "Claude Haiku 4.5"
+
+[agents.tools]
+Read = "read"
+Write = "edit"
+Edit = "edit"
+Grep = "search"
+Glob = "search"
+Bash = "execute"
+
+[agents.orchestrator]
+name = "pmx-orchestrator"
+description = "Routes work to PMx specialists, verifies their evidence, and presents gate decisions to the SME."
+role_file = "roles/orchestrator.md"
+dispatch_map_doc = "docs/PORTABILITY.md"
+dispatch_map_heading = "## Dispatch map"
+model = "opus"
+tools = ["agent", "read", "search", "execute", "edit"]
+review_note = """Dispatch `pmx-reviewer` as an independent subagent. Each specialist
+lists `agents: []`; the reviewer is not automatically invocable by generated specialists.
+The orchestrator explicitly lists the available agents.
+The owner can select `@pmx-reviewer` directly in a fresh chat. Reviewer
+isolation is procedural whenever shell execution or unguarded file editing
+is available. Record the model reported by the runtime or `unreported`."""
+
+# One shim for each runtime-neutral skill under skills/.
+[[skills]]
+name = "baseline-fit"
+description = "Use for declared baseline input custody and conditional raw estimation evidence. The baseline method is draft and refuses to run until signed."
+
+[[skills]]
+name = "covariate-priors"
+description = "Use when building or reviewing a covariate model: the SME physiological prior list is frozen before any search, and the search (SCM, FREM, or prior-driven full model) runs only within it — the countermeasure to OFV-chasing covariate work."
+
+[[skills]]
+name = "data-assembly"
+description = "Use when assembling the analysis-ready PK/PD dataset from source data: NONMEM-ready derivation steps, the QC battery, and the data specification, every step run as a targets target."
+
+[[skills]]
+name = "diagnostics"
+description = "Use when producing or judging model diagnostics: goodness-of-fit, VPC, NPDE, and bootstrap batteries with declared diagnostic settings, for per-run modeler diagnostics and the risk-scaled qualification stage."
+
+[[skills]]
+name = "eda-standards"
+description = "Use when producing exploratory data analysis for a PK/PD dataset: the standard tables, figures, and observations memo, all executed through the pipeline."
+
+[[skills]]
+name = "forest-plots"
+description = "Use when a covariate-effect forest plot is needed: PMXForest-based rendering of covariate effects with uncertainty and reference bands, as declared in the analysis plan."
+
+[[skills]]
+name = "knowledge-base"
+description = "Use when a pharmacometric question needs primary pharmacometrics literature or a site-provided knowledge source. Record citations and route decisions to the SME."
+
+[[skills]]
+name = "midd-framing"
+description = "Use at the start and close-out of a regulatory-facing analysis: ICH M15 framing — question of interest, context of use, model risk rating, Model Analysis Plan, and the assessment table."
+
+[[skills]]
+name = "model-management"
+description = "Use when creating, numbering, or tracing model runs: the bbr YAML metadata, numbered runs, based_on lineage, and run-record discipline for the modeling and covariate stages."
+
+[[skills]]
+name = "nonmem-estimation"
+description = "Use when submitting or reading a NONMEM estimation run through bbr/bbi: engine configuration, run submission, result extraction, and the engine-parity evidence that must accompany every run."
+
+[[skills]]
+name = "psn-simeval"
+description = "Use when running the PsN simulation-evaluation family (vpc, npc, sse) on a NONMEM model: which units require local review, their arguments, and how results enter the pipeline."
+
+[[skills]]
+name = "psn-uncertainty"
+description = "Use when quantifying parameter uncertainty with PsN (bootstrap, sir, llp, nonpb, mcmp): which units require local review, what the MAP must declare, and how results enter the pipeline."
+
+[[skills]]
+name = "reference-models"
+description = "Use when a NONMEM control stream is needed: adapt a template from the unsigned starter library via bbr and model_diff, never write one from scratch; a structure the library lacks is flagged NOVEL at the gate."
+
+[[skills]]
+name = "reporting-standards"
+description = "Use when assembling the Model Analysis Report and summary deck from gated artifacts: the ICH M15 Appendix 2 structure, Quarto rendering, and the declared project reporting controls."
+
+[[skills]]
+name = "review-checklist"
+description = "Use when performing the independent review of an analysis: the SME's review criteria, severity scale, fresh-store reproduction, and how findings are routed to their owning stage."
+
+[[skills]]
+name = "simulation-standards"
+description = "Use when executing declared simulation scenarios from a qualified model with mrgsolve: recorded seeds, uncertainty propagation, and the declared simulation settings."
+
+[editor]
+markdown_byte_exact = true
+terminal_deny_dirs = ["gates"]
+rationale = """Gate signatures bind exact generated bytes. Preserve Markdown formatting on
+save and apply signatures through the documented local process."""
+editorconfig_rationale = "Gate signatures bind exact generated bytes. Preserve Markdown whitespace."
+editorconfig_extra = """[*.R]
+indent_style = space
+indent_size = 2"""
+
+[[standing_rules]]
+text = "Store real study data and site credentials outside the repository. Declare local paths in the ignored site configuration."
+
+[[standing_rules]]
+text = "Run installation, export, reproduction, and report verification on disposable copies."
+
+[[standing_rules]]
+text = "Read the producing log or artifact when a wrapper suppresses diagnostics. Quote the command and decisive output from each check."
+
+# This is the stock kit path/mode allowlist. Files outside it never seed.
+# Per-export content hashes, sizes and modes belong in the generated asset manifest.
+[export]
+exact = true
+payload = [
+  ".claude/agents/pmx-covariate-analyst.md",
+  ".claude/agents/pmx-data-assembler.md",
+  ".claude/agents/pmx-exploratory-analyst.md",
+  ".claude/agents/pmx-midd-strategist.md",
+  ".claude/agents/pmx-model-qualifier.md",
+  ".claude/agents/pmx-modeler.md",
+  ".claude/agents/pmx-report-writer.md",
+  ".claude/agents/pmx-reviewer.md",
+  ".claude/agents/pmx-simulator.md",
+  ".claude/hooks/protect_paths.py",
+  ".claude/hooks/session_mandate.py",
+  ".claude/settings.json",
+  ".claude/skills/metaprogramming/SKILL.md",
+  ".claude/skills/targets-pipelines/SKILL.md",
+  ".claude/skills/targets-pipelines/references/pattern-composition.md",
+  ".claude/skills/targets-pipelines/references/tarchetypes-functions.md",
+  ".claude/skills/targets-pipelines/references/targets-utilities.md",
+  ".claude/skills/targets-pipelines/templates/static-branching.R",
+  ".claude/skills/targets-pipelines/templates/target-factory.R",
+  ".claude/skills/targets-pipelines/topic-dynamic-branching.md",
+  ".claude/skills/targets-pipelines/topic-hybrid-branching.md",
+  ".claude/skills/targets-pipelines/topic-static-branching.md",
+  ".claude/skills/targets-pipelines/topic-target-factories.md",
+  ".claude/skills/tidy-evaluation/SKILL.md",
+  ".github/workflows/ci.yaml",
+  ".gitignore",
+  "CLAUDE.md",
+  "LICENSE",
+  "LICENSES/llm-r-skills-MIT.txt",
+  "README.md",
+  "analyses/synthetic_example.R",
+  "config/engine.yaml",
+  "config/r-packages.lock",
+  "docs/ARCHITECTURE.md",
+  "docs/COPILOT-RUNBOOK.md",
+  "docs/PORTABILITY.md",
+  "docs/SME-GUIDE.md",
+  "docs/THREAT-MODEL.md",
+  "docs/WORKFLOW.md",
+  "docs/example_targets.R",
+  "harness.yaml.example",
+  "pipeline/_targets_full_example.R",
+  "pipeline/compose.R",
+  "pipeline/tasks/base_model.R",
+  "pipeline/tasks/baseline_fit.R",
+  "pipeline/tasks/baseline_input.R",
+  "pipeline/tasks/covariate.R",
+  "pipeline/tasks/data_assembly.R",
+  "pipeline/tasks/eda.R",
+  "pipeline/tasks/qualification.R",
+  "pipeline/tasks/reporting.R",
+  "pipeline/tasks/review.R",
+  "pipeline/tasks/simulation.R",
+  "roles/covariate-analyst.md",
+  "roles/data-assembler.md",
+  "roles/exploratory-analyst.md",
+  "roles/midd-strategist.md",
+  "roles/model-qualifier.md",
+  "roles/modeler.md",
+  "roles/orchestrator.md",
+  "roles/report-writer.md",
+  "roles/reviewer.md",
+  "roles/simulator.md",
+  "setup_environment.R",
+  "skills/README.md",
+  "skills/baseline-fit/MANIFEST.yaml",
+  "skills/baseline-fit/SKILL.md",
+  "skills/baseline-fit/reference/baseline_fit.R",
+  "skills/covariate-priors/MANIFEST.yaml",
+  "skills/covariate-priors/SKILL.md",
+  "skills/covariate-priors/SKILL_PSN_COVSEARCH.md",
+  "skills/covariate-priors/SKILL_SCM.md",
+  "skills/covariate-priors/reference/covariate_effect.R",
+  "skills/covariate-priors/reference/covariate_search.R",
+  "skills/covariate-priors/reference/nested_lrt.R",
+  "skills/covariate-priors/reference/psn_covsearch.R",
+  "skills/covariate-priors/reference/scm_config.R",
+  "skills/data-assembly/MANIFEST.yaml",
+  "skills/data-assembly/SKILL.md",
+  "skills/data-assembly/reference/weight_constants.R",
+  "skills/diagnostics/MANIFEST.yaml",
+  "skills/diagnostics/SKILL.md",
+  "skills/diagnostics/SKILL_VPC.md",
+  "skills/diagnostics/reference/bootstrap.R",
+  "skills/diagnostics/reference/bootstrap_agreement.R",
+  "skills/diagnostics/reference/gof.R",
+  "skills/diagnostics/reference/npde.R",
+  "skills/diagnostics/reference/npde_panels.R",
+  "skills/diagnostics/reference/npde_tests.R",
+  "skills/diagnostics/reference/qualification_verdict.R",
+  "skills/diagnostics/reference/vpc.R",
+  "skills/diagnostics/reference/vpc_coverage.R",
+  "skills/diagnostics/reference/vpc_strata.R",
+  "skills/eda-standards/MANIFEST.yaml",
+  "skills/eda-standards/SKILL.md",
+  "skills/eda-standards/reference/eda.R",
+  "skills/forest-plots/MANIFEST.yaml",
+  "skills/forest-plots/SKILL.md",
+  "skills/forest-plots/reference/forest.R",
+  "skills/knowledge-base/SKILL.md",
+  "skills/midd-framing/SKILL.md",
+  "skills/model-management/SKILL.md",
+  "skills/nonmem-estimation/MANIFEST.yaml",
+  "skills/nonmem-estimation/SKILL.md",
+  "skills/nonmem-estimation/reference/bbr_estimation.R",
+  "skills/psn-simeval/MANIFEST.yaml",
+  "skills/psn-simeval/SKILL.md",
+  "skills/psn-simeval/reference/psn_simeval.R",
+  "skills/psn-uncertainty/MANIFEST.yaml",
+  "skills/psn-uncertainty/SKILL.md",
+  "skills/psn-uncertainty/reference/psn_uncertainty.R",
+  "skills/reference-models/MANIFEST.yaml",
+  "skills/reference-models/SKILL.md",
+  "skills/reference-models/reference/onecmt_iv.ctl",
+  "skills/reference-models/reference/onecmt_oral.ctl",
+  "skills/reference-models/reference/twocmt_iv.ctl",
+  "skills/reference-models/reference/twocmt_oral.ctl",
+  "skills/reporting-standards/SKILL.md",
+  "skills/review-checklist/SKILL.md",
+  "skills/simulation-standards/MANIFEST.yaml",
+  "skills/simulation-standards/SKILL.md",
+  "skills/simulation-standards/reference/bound_comparison.R",
+  "skills/simulation-standards/reference/exposure_metrics.R",
+  "skills/simulation-standards/reference/mrgsolve_sim.R",
+  "skills/simulation-standards/reference/uncertainty.R",
+  "templates/MAP.md",
+  "templates/MAR.md",
+  "templates/assessment-table.md",
+  "templates/gate-signoff.md",
+  "templates/report/.gitignore",
+  "templates/report/deck.qmd",
+  "templates/report/mar.qmd",
+  "templates/report/sections/01-executive-summary.qmd",
+  "templates/report/sections/02-introduction.qmd",
+  "templates/report/sections/03-objectives.qmd",
+  "templates/report/sections/04-data-and-methods.qmd",
+  "templates/report/sections/05-results.qmd",
+  "templates/report/sections/06-discussion.qmd",
+  "templates/report/sections/07-conclusions.qmd",
+  "templates/report/sections/08-appendices.qmd",
+  "templates/report/style/house.scss",
+  "tools/approve_gate.R",
+  "tools/check_environment.R",
+  "tools/ci_check.R",
+  "tools/diagnostics_panel.R",
+  "tools/engine_config.R",
+  "tools/errata.R",
+  "tools/evidence_notes.R",
+  "tools/eda_application.R",
+  "tools/external.R",
+  "tools/gate.R",
+  "tools/gate_package.R",
+  "tools/load_reference.R",
+  "tools/method_manifest.R",
+  "tools/nlmixr_runs.R",
+  "tools/nonmem_container.sh",
+  "tools/nonmem_exec.sh",
+  "tools/nonmem_frames.R",
+  "tools/nonmem_qualification.R",
+  "tools/nonmem_shim/run/nmfe75",
+  "tools/nonmem_simulation.R",
+  "tools/psn_invocation.R",
+  "tools/qc_battery.R",
+  "tools/qualification.R",
+  "tools/r_lock.R",
+  "tools/record_selection.R",
+  "tools/report_number_census.R",
+  "tools/report_owner_review.R",
+  "tools/report_semantic.R",
+  "tools/report_typography.R",
+  "tools/resolve_engine_config.R",
+  "tools/resolved_context.sh",
+  "tools/review_stage.R",
+  "tools/run_report.R",
+  "tools/seed.R",
+  "tools/sign_approve_gate.R",
+  "tools/sme_resign.sh",
+  "tools/tests/fixtures/baseline_fit_worker.R",
+  "tools/tests/fixtures/public_workflow/eda_inputs.R",
+  "tools/tests/fixtures/public_workflow/nonmem_cases.R",
+  "tools/tests/test_baseline_fit.sh",
+  "tools/tests/test_batch10.R",
+  "tools/tests/test_batch11.R",
+  "tools/tests/test_batch12.R",
+  "tools/tests/test_batch13.R",
+  "tools/tests/test_batch14.R",
+  "tools/tests/test_batch15.R",
+  "tools/tests/test_batch16.R",
+  "tools/tests/test_batch4.R",
+  "tools/tests/test_batch7.R",
+  "tools/tests/test_batch8.R",
+  "tools/tests/test_batch9.R",
+  "tools/tests/test_canon2_golden.R",
+  "tools/tests/test_covariate_task.R",
+  "tools/tests/test_eda_declarative.R",
+  "tools/tests/test_eda_external_spec.R",
+  "tools/tests/test_env_confirm.R",
+  "tools/tests/test_failopen_fixes.R",
+  "tools/tests/test_integrity.R",
+  "tools/tests/test_method_manifest.R",
+  "tools/tests/test_nonmem_base_model.R",
+  "tools/tests/test_nonmem_image.sh",
+  "tools/tests/test_note_text.R",
+  "tools/tests/test_protect_paths.sh",
+  "tools/tests/test_report_owner_review.R",
+  "tools/tests/test_report_semantic.R",
+  "tools/tests/test_review_environment.R",
+  "tools/tests/test_review_integrity.R",
+  "tools/tests/test_review_results.R",
+  "tools/tests/test_review_runtime.R",
+  "tools/tests/test_run_compute.R",
+  "tools/tests/test_sign_approve_gate.R",
+  "tools/tests/test_sme_resign.sh",
+  "tools/yaml_scalar.R",
+]
+executable = [
+  ".claude/hooks/protect_paths.py",
+  ".claude/hooks/session_mandate.py",
+  "tools/nonmem_container.sh",
+  "tools/nonmem_exec.sh",
+  "tools/nonmem_shim/run/nmfe75",
+  "tools/resolve_engine_config.R",
+  "tools/sme_resign.sh",
+  "tools/tests/test_protect_paths.sh",
+]
+exclude = [
+  "gates/**",
+  "pilot/**",
+  "_targets*/**",
+  "data/**",
+  "references/**",
+  "software/**",
+  "harness.yaml",
+  "harness.local.yaml",
+  ".harness-unlock",
+  "**/.env",
+  "**/.mcp.json",
+  "**/.token_seed",
+  ".claude/settings.local.json",
+  ".claude/worktrees/**",
+  ".vscode/**",
+  "nlmixr2BootstrapCache_*/**",
+]

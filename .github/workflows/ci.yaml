@@ -1,0 +1,145 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  light-battery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install lightweight CI dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends r-base-core r-cran-digest r-cran-yaml r-cran-jsonlite python3 python3-yaml
+
+      - name: CI battery (light mode)
+        run: Rscript tools/ci_check.R --light
+
+      - name: PreToolUse guard test suite
+        run: bash tools/tests/test_protect_paths.sh
+
+      - name: Copilot adapter test suite
+        run: bash copilot-adapter/tests/test_setup.sh
+
+      - name: Copilot adapter generated files
+        run: python3 copilot-adapter/setup.py check
+
+  full-battery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: r-lib/actions/setup-r@v2
+        id: setup-r
+        with:
+          use-public-rspm: true
+
+      # tarchetypes::tar_quarto_raw asserts the Quarto CLI exists at
+      # TARGET-CONSTRUCTION time, so composition (tar_manifest) fails
+      # without it — reproduced locally by stripping quarto from PATH:
+      # "Quarto CLI not found". The CLI is needed; no document is rendered.
+      - uses: quarto-dev/quarto-actions/setup@v2
+
+      # igraph (a targets dependency) links against GLPK; the P3M binary
+      # needs the system library at load time (observed on the runner:
+      # "libglpk.so.40: cannot open shared object file").
+      - name: Install system libraries for the CI R dependency closure
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libglpk40 libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev libpng-dev libtiff-dev libjpeg-dev cmake make g++ gfortran python3-yaml
+
+      - name: Identify R runtime and runner image for cache
+        id: ci-platform
+        shell: bash
+        run: |
+          Rscript -e 'cat(paste0("r=", getRversion(), "-", R.version$platform, "\n"))' >> "$GITHUB_OUTPUT"
+          echo "image=$(sha256sum /etc/os-release | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache R library
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: full-battery-${{ runner.os }}-${{ runner.arch }}-${{ steps.ci-platform.outputs.r }}-${{ steps.ci-platform.outputs.image }}-${{ hashFiles('.github/scripts/install_ci_dependencies.R', '.github/workflows/ci.yaml') }}
+
+      - name: Install poppler-utils (pdftotext for the rendered-report semantic battery)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+
+      - name: Install full-battery R dependencies
+        run: Rscript .github/scripts/install_ci_dependencies.R full
+
+      - name: Check composition and PDF extraction tools
+        run: |
+          quarto --version
+          pdftotext -v
+
+      - name: Generate synthetic example inputs
+        run: Rscript --vanilla analyses/synthetic_example.R --generate
+
+      - name: CI battery (full mode)
+        run: R_LIBS_SITE="$R_LIBS_USER" Rscript tools/ci_check.R
+
+  validated-stack:
+    name: "Full battery, validated stack"
+    runs-on: ubuntu-latest
+    env:
+      PMX_CI_NO_SKIP: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: r-lib/actions/setup-r@v2
+        id: setup-r
+        with:
+          use-public-rspm: true
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Install system libraries (CI R dependency closure and pdftotext)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends libglpk40 poppler-utils libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev libpng-dev libtiff-dev libjpeg-dev cmake make g++ gfortran python3-yaml
+
+      - name: Install tectonic (official installer; binary lands in the working directory)
+        run: |
+          mkdir -p "$HOME/.local/tectonic-bin" && cd "$HOME/.local/tectonic-bin"
+          curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
+          echo "$HOME/.local/tectonic-bin" >> "$GITHUB_PATH"
+          ./tectonic --version
+
+      - name: Identify R runtime and runner image for cache
+        id: ci-platform
+        shell: bash
+        run: |
+          Rscript -e 'cat(paste0("r=", getRversion(), "-", R.version$platform, "\n"))' >> "$GITHUB_OUTPUT"
+          echo "image=$(sha256sum /etc/os-release | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache R library
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: validated-stack-${{ runner.os }}-${{ runner.arch }}-${{ steps.ci-platform.outputs.r }}-${{ steps.ci-platform.outputs.image }}-${{ hashFiles('.github/scripts/install_ci_dependencies.R', '.github/workflows/ci.yaml') }}
+
+      - name: Install the validated R stack (MPN snapshot 2025-09-17 + CRAN)
+        run: |
+          Rscript .github/scripts/install_ci_dependencies.R validated
+          tectonic --version
+          quarto --version
+          pdftotext -v
+
+      - name: Generate synthetic example inputs
+        run: Rscript --vanilla analyses/synthetic_example.R --generate
+
+      - name: CI battery (full mode, validated stack)
+        run: R_LIBS_SITE="$R_LIBS_USER" Rscript tools/ci_check.R

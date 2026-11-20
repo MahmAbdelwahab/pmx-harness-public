@@ -1,0 +1,4 @@
+# Data and Methods
+
+The reviewed stage packages record the source inputs, methods and quality checks.
+The archived notes below accompany those packages.

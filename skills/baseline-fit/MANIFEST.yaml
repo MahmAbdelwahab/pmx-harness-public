@@ -1,0 +1,31 @@
+# Public method manifest (schema v2).
+# Local confirmation is required for an approved unit to run.
+skill: baseline-fit
+generated_at: 2026-11-20T08:45:38Z
+reviewed_by: ""
+reviewed_at: ""
+units:
+  baseline:
+    status: draft
+    reference_path: skills/baseline-fit/reference/baseline_fit.R
+    entrypoints: [reference_baseline_fit, reference_baseline_summary]
+    sha256: sha256:ebd2fa4d4ba2c7ccfda37c7330ec83ccce4b3d6bdd9de44739079ed8eb0f9afc
+    depends:
+      - path: tools/method_manifest.R
+        sha256: sha256:853245cb69440fc5b22ee73b0b4d67b8747984910fbb7492ee5d61f327f26543
+      - path: tools/load_reference.R
+        sha256: sha256:943f361921fc38c3e39f837e8eddf86e5c874de76ae4845fd495013be3988755
+      - path: tools/engine_config.R
+        sha256: sha256:f33aed18abb732acd86ab8225adf421f0678359b0048e7382212bf45196b459f
+      - path: tools/yaml_scalar.R
+        sha256: sha256:c5adf696b4554541d38fc7146e222dbd54d43735459fd87174c5438011be61f4
+      - path: tools/r_lock.R
+        sha256: sha256:42065ddeb422988dcf62de31d024407d723510f0e6d15d20d811836250c48587
+      - path: config/r-packages.lock
+        sha256: sha256:6e2a6844c5228da1da086d87d173ecf053f17d963243fc79362ab4aa7a0224c2
+      - path: skills/nonmem-estimation/reference/bbr_estimation.R
+        sha256: sha256:d0c1f430b2b6a96010220cce9429e073d6318a1332947083eb1f0efcb4f36b91
+      - path: skills/nonmem-estimation/MANIFEST.yaml
+        sha256: sha256:02b3f5bdc20e300d2f83bac894683cba9186118426040863873dc29b931245a3
+    evidence: ""
+    reason: "Draft method awaiting local review"

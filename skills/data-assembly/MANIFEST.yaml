@@ -1,0 +1,14 @@
+# Public method manifest (schema v2).
+# Local confirmation is required for an approved unit to run.
+skill: data-assembly
+generated_at: 2026-11-20T08:45:38Z
+reviewed_by: ""
+reviewed_at: ""
+units:
+  weight_constants:
+    status: draft
+    reference_path: skills/data-assembly/reference/weight_constants.R
+    entrypoints: [reference_weight_constants]
+    sha256: sha256:042357b78d8f051b21ec0ccbee6b032d1d85edab787d6dcf58e45fa1d0bd8157
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"

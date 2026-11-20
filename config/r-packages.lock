@@ -1,0 +1,23 @@
+# R package manifest (tools/r_lock.R::write_r_packages_lock).
+# Written 2026-08-31 15:07 UTC under R 4.3.3.
+# Under r_provision 'site' the environment check verifies the
+# validated system library against these versions and reports
+# every mismatch for SME disposition. Never edited by hand.
+targets: 1.12.0
+here: 1.0.2
+yaml: 2.3.12
+yspec: 0.7.0
+mrgda: 0.13.0
+lastdose: 0.5.0
+mrgmisc: 0.3.0
+pmtables: 0.9.0
+pmplots: 0.5.1
+mrggsave: 0.4.7
+bbr: 1.14.2
+readr: 2.1.5
+rxode2: 5.1.6
+nlmixr2: 7.0.1
+nlmixr2est: 7.0.2
+mrgsolve: 1.6.1
+tarchetypes: 0.13.2
+quarto: 1.5.1

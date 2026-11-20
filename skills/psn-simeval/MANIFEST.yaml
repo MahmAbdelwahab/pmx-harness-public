@@ -1,0 +1,37 @@
+# Public method manifest (schema v2).
+# Local confirmation is required for an approved unit to run.
+skill: psn-simeval
+generated_at: 2026-11-20T08:45:38Z
+reviewed_by: ""
+reviewed_at: ""
+units:
+  npc:
+    status: draft
+    reference_path: skills/psn-simeval/reference/psn_simeval.R
+    entrypoints: [reference_psn_npc]
+    sha256: sha256:310b4f4ab9aee5f2f62d84a343118cad9fed94f97be93815026768acdc1f2cb4
+    depends:
+      - path: tools/psn_invocation.R
+        sha256: sha256:6b5b276d1d0ee204d5fda497d8c343163242a23bb1036914a6f0f3311e225769
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  sse:
+    status: draft
+    reference_path: skills/psn-simeval/reference/psn_simeval.R
+    entrypoints: [reference_psn_sse]
+    sha256: sha256:310b4f4ab9aee5f2f62d84a343118cad9fed94f97be93815026768acdc1f2cb4
+    depends:
+      - path: tools/psn_invocation.R
+        sha256: sha256:6b5b276d1d0ee204d5fda497d8c343163242a23bb1036914a6f0f3311e225769
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  vpc:
+    status: draft
+    reference_path: skills/psn-simeval/reference/psn_simeval.R
+    entrypoints: [reference_psn_vpc]
+    sha256: sha256:310b4f4ab9aee5f2f62d84a343118cad9fed94f97be93815026768acdc1f2cb4
+    depends:
+      - path: tools/psn_invocation.R
+        sha256: sha256:6b5b276d1d0ee204d5fda497d8c343163242a23bb1036914a6f0f3311e225769
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"

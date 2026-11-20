@@ -1,0 +1,98 @@
+# Starter copilot-adapter profile. Copy is made by `setup.py init`.
+# Edit the values, then run `python3 copilot-adapter/setup.py install`.
+# Never put an MCP URL here: setup.py refuses a [[mcp]] entry with a `url` key.
+
+schema = 1
+
+[project]
+name = "my-project"
+summary = "One line describing what this project is."
+principal = "SME"
+# memory_dataset = "my-project"      # uncomment to emit the memory bullets
+depth_docs = ["README.md"]
+# roles_dir = "roles"                # role specs, if the project has them
+# dispatch_map_doc = "docs/GUIDE.md" # who owns which task, if documented
+contract = "contract.md"
+
+[orchestrator]
+inline_mandate = true
+mandate_file = ""
+reviewer_role = "reviewer"
+
+[[do_not_edit]]
+path = "signed/**"
+reason = "signed records are the principal's hand; the machine writes them, never the agent."
+
+[[instructions]]
+slug = "signed-records"
+apply_to = "signed/**"
+name = "Signed records are read-only"
+description = "Never edit signed records."
+body = "instructions/signed-records.md"
+
+[[mcp]]
+id = "example-server"
+type = "http"
+input_description = "Example MCP endpoint URL (URL-as-credential; never commit the literal value)"
+
+# --- Optional sources (uncomment to enable) ----------------------------------
+# Hooks: renders .github/hooks/<file>.json (Copilot native format, read by VS
+# Code and the Copilot cloud agent). Commands are repo-relative; a command
+# containing $CLAUDE_PROJECT_DIR is refused because Copilot never sets it.
+# [hooks]
+# file = "my-project"
+# pre_tool_use = "python3 .claude/hooks/protect_paths.py"
+# session_start = "python3 .claude/hooks/session_mandate.py"
+# timeout_sec = 10
+
+# Agents: renders .github/agents/<name>.agent.md from Claude agent files found
+# in source_dir (frontmatter: name, description, model, tools; body verbatim).
+# Both mapping tables are required; an unmapped model alias or tool is an error.
+# [agents]
+# source_dir = ".claude/agents"
+# glob = "*.md"
+# disable_model_invocation = ["reviewer"]
+# [agents.models]
+# opus = "Claude Opus 4.8"   # must exist in your Copilot model catalog; unmatched names fall back silently
+# sonnet = "Claude Sonnet 4.5 (copilot)"
+# haiku = "Claude Haiku 4.5 (copilot)"
+# [agents.tools]
+# Read = "read"
+# Write = "edit"
+# Edit = "edit"
+# Grep = "search"
+# Glob = "search"
+# Bash = "execute"
+# [agents.orchestrator]              # optional composed orchestrator agent
+# name = "orchestrator"
+# description = "The principal's single point of contact."
+# role_file = "roles/orchestrator.md"
+# dispatch_map_doc = "docs/GUIDE.md"  # optional; section under dispatch_map_heading is appended
+# dispatch_map_heading = "## Dispatch map"
+# model = "opus"
+# tools = ["agent", "read", "search", "execute", "edit"]
+# review_note = "Independent review is dispatched to the reviewer subagent."
+
+# Skills: renders .github/skills/<name>/SKILL.md shims, one per
+# <skills_dir>/<name>/SKILL.md ([project].skills_dir, default "skills";
+# skills_exclude default ["_parked"]). Every folder needs an entry and every
+# entry a folder, or install refuses.
+# [[skills]]
+# name = "example-skill"
+# description = "Use when ... (one sentence saying when to use it)."
+
+[editor]
+markdown_byte_exact = true
+# Directories whose shell writes need terminal approval in VS Code.
+terminal_deny_dirs = ["signed"]
+
+[[standing_rules]]
+text = "Project data never enters this repository; paths live in a git-ignored config file."
+
+# Export payload: repo-relative paths and globs that `setup.py export DEST`
+# snapshots into DEST/copilot-adapter/assets/, so the exported bundle carries
+# the project's own build tools and sources. Optional — without an [export]
+# table, `export` copies the generator only. `exclude` wins over `payload`.
+# [export]
+# payload = ["tools/**", "docs/**", "CLAUDE.md"]
+# exclude = ["signed/**", "data/**", "secrets.yaml"]

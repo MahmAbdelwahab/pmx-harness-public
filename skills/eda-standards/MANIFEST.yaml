@@ -1,0 +1,67 @@
+# Public method manifest (schema v2).
+# Local confirmation is required for an approved unit to run.
+skill: eda-standards
+generated_at: 2026-11-20T08:45:38Z
+reviewed_by: ""
+reviewed_at: ""
+units:
+  display_transforms:
+    status: draft
+    reference_path: skills/eda-standards/reference/eda.R
+    entrypoints: [reference_eda_quantile_bins, reference_eda_normalize]
+    sha256: sha256:a36a6791f2f3da9bd6fe256e367413efc8d63eccc6cbfd4610c47a94ca1b4f41
+    depends:
+      - path: tools/record_selection.R
+        sha256: sha256:325db153934b9d29584117bf9f70f3753236ef6a2faa9d0be2c75a9fc8ba744f
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  figure_construction:
+    status: draft
+    reference_path: skills/eda-standards/reference/eda.R
+    entrypoints: [reference_eda_build_figure, reference_eda_write_figure]
+    sha256: sha256:a36a6791f2f3da9bd6fe256e367413efc8d63eccc6cbfd4610c47a94ca1b4f41
+    depends:
+      - path: tools/record_selection.R
+        sha256: sha256:325db153934b9d29584117bf9f70f3753236ef6a2faa9d0be2c75a9fc8ba744f
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  log_axis_audit:
+    status: draft
+    reference_path: skills/eda-standards/reference/eda.R
+    entrypoints: [reference_eda_log_axis_audit, reference_eda_log_axis_audit_table]
+    sha256: sha256:a36a6791f2f3da9bd6fe256e367413efc8d63eccc6cbfd4610c47a94ca1b4f41
+    depends:
+      - path: tools/record_selection.R
+        sha256: sha256:325db153934b9d29584117bf9f70f3753236ef6a2faa9d0be2c75a9fc8ba744f
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  record_selection:
+    status: draft
+    reference_path: skills/eda-standards/reference/eda.R
+    entrypoints: [reference_eda_view, reference_eda_rowset_digest]
+    sha256: sha256:a36a6791f2f3da9bd6fe256e367413efc8d63eccc6cbfd4610c47a94ca1b4f41
+    depends:
+      - path: tools/record_selection.R
+        sha256: sha256:325db153934b9d29584117bf9f70f3753236ef6a2faa9d0be2c75a9fc8ba744f
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  registry_validation:
+    status: draft
+    reference_path: skills/eda-standards/reference/eda.R
+    entrypoints: [reference_eda_registry_check, reference_eda_registry_active, reference_eda_registry_index, reference_eda_plot_rowset_digest, reference_eda_figure_check, reference_eda_core_status]
+    sha256: sha256:a36a6791f2f3da9bd6fe256e367413efc8d63eccc6cbfd4610c47a94ca1b4f41
+    depends:
+      - path: tools/record_selection.R
+        sha256: sha256:325db153934b9d29584117bf9f70f3753236ef6a2faa9d0be2c75a9fc8ba744f
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"
+  summary_statistics:
+    status: draft
+    reference_path: skills/eda-standards/reference/eda.R
+    entrypoints: [reference_eda_inventory, reference_eda_continuous_summary, reference_eda_categorical_summary]
+    sha256: sha256:a36a6791f2f3da9bd6fe256e367413efc8d63eccc6cbfd4610c47a94ca1b4f41
+    depends:
+      - path: tools/record_selection.R
+        sha256: sha256:325db153934b9d29584117bf9f70f3753236ef6a2faa9d0be2c75a9fc8ba744f
+    evidence: ""
+    reason: "Unsigned public method awaiting local review"

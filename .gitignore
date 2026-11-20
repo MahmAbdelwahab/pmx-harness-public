@@ -1,0 +1,41 @@
+harness.yaml
+harness.local.yaml
+data/
+_targets/
+_targets_*/
+nlmixr2BootstrapCache_*/
+software/
+
+# NONMEM/PsN run scratch (per-replicate run dirs, sim-model copies,
+# temp trees). Decisive artifacts — lst files, raw_results,
+# bootstrap/vpc results, command.txt, version_and_option_info.txt,
+# engine-config-used snapshots — are NOT ignored and are committed as
+# the audit trail.
+**/NM_run*/
+**/m1/
+**/temp_dir/
+# NONMEM intermediate/large files anywhere (defense in depth beyond the
+# run-dir patterns; decisive results are lst/ext/cov/tables and are
+# small text). msf checkpoints can reach MBs on real analyses.
+FDATA*
+FCON
+FSTREAM
+FSUBS*
+FREPORT
+FSIZES
+LINK.LNK
+compile.lnk
+*.msf
+nonmem.exe
+
+# SME override token for harness-core / signed-skill edits (PreToolUse guard).
+.harness-unlock
+.claude/worktrees/
+
+# Python bytecode caches (the protect_paths guard battery imports the live
+# hook with importlib, which writes .claude/hooks/__pycache__/).
+__pycache__/
+*.pyc
+
+# Generated synthetic quick-start files.
+/examples/synthetic/

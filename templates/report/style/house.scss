@@ -1,0 +1,77 @@
+/*-- scss:defaults --*/
+
+// House MAR style (SME decision 2026-08-29: build house style now).
+// Deliberately restrained: typography, spacing, and table conventions
+// only — no logos or organization branding. Swap values here; section
+// files never carry styling.
+
+$font-family-sans-serif: "Source Sans Pro", "Segoe UI", "Helvetica Neue",
+  Arial, sans-serif;
+$font-family-monospace: "Source Code Pro", Consolas, "Liberation Mono",
+  monospace;
+$presentation-heading-color: #1a3a5c;
+$link-color: #1a5c8a;
+$body-color: #1f2328;
+$font-size-root: 15px;
+
+/*-- scss:rules --*/
+
+// Title block: banner-style header for the regulatory record.
+#title-block-header {
+  border-bottom: 3px solid #1a3a5c;
+  margin-bottom: 2rem;
+  padding-bottom: 0.75rem;
+
+  .title {
+    color: #1a3a5c;
+    font-weight: 600;
+  }
+}
+
+h1,
+h2 {
+  color: #1a3a5c;
+}
+
+h1 {
+  border-bottom: 1px solid #d0d7de;
+  padding-bottom: 0.25rem;
+  margin-top: 2.5rem;
+}
+
+// Tables: regulatory-report look — horizontal rules only, tight rows,
+// caption above.
+table {
+  font-size: 0.92em;
+
+  caption {
+    caption-side: top;
+    color: #1f2328;
+    font-weight: 600;
+    text-align: left;
+    padding-bottom: 0.4rem;
+  }
+
+  thead th {
+    border-top: 2px solid #1a3a5c;
+    border-bottom: 1px solid #1a3a5c;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 2px solid #1a3a5c;
+  }
+}
+
+// Figure captions: match table captions.
+figcaption {
+  color: #1f2328;
+  font-size: 0.92em;
+  text-align: left;
+}
+
+// Appendices: visually separated from the body.
+h1.appendix,
+section.appendix > h1 {
+  border-top: 3px double #1a3a5c;
+  padding-top: 1rem;
+}

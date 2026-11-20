@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+# nmfe75 shim for bbi — the bbr estimation lane's bridge into the
+# containerized NONMEM provision.
+#
+# bbi.yaml points its nonmem entry at this script (home =
+# tools/nonmem_shim, executable = nmfe75); bbi execs it from the model
+# run directory with the exact arguments it would pass to a native
+# nmfe75. The shim relays the call into the container via
+# tools/nonmem_container.sh with the current directory as workdir, and
+# relays the container's exit code back so bbi sees success and failure
+# unaltered.
+#
+# Debuggability (SME request 2026-09-03). PsN leaves psn.log and
+# NM_run1/OUTPUT behind; bbi keeps the nmfe console in the R session
+# only. The shim therefore also writes, into the run directory:
+#
+#   OUTPUT            the nmfe console (stdout + stderr), PsN's name for
+#                     it. An OUTPUT from an earlier attempt is never
+#                     overwritten: it is rotated to OUTPUT.<UTC-timestamp>
+#                     (with a numeric suffix if that name is taken).
+#   harness-run.log   the shim's own record, APPENDED per attempt: run
+#                     directory, resolved backend and its argument line,
+#                     provision and image, start/finish timestamps, the
+#                     exit status, and any rotation or stop.
+#
+# bbi sets the working directory to the run directory before invoking the
+# shim with relative input and output paths. The container uses it as its
+# working directory.
+#
+# Parafile guard: when bbi passes -parafile=<file> (it copies the SME's
+# parafile into the run directory as <run>.pnm first), the file must
+# exist here before nmfe starts; a missing one is a stop that names the
+# resolved path.
+#
+# NONMEM_SHIM_BACKEND (environment, optional): path of the executable
+# that receives "<run dir> nmfe75 <args>". Defaults to
+# tools/nonmem_container.sh. Exists so the test battery can substitute a
+# stub without docker; any override is written to harness-run.log so it
+# can never be silent.
+
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RUN_DIR="$(pwd)"
+DEFAULT_BACKEND="$HERE/../../nonmem_container.sh"
+BACKEND="${NONMEM_SHIM_BACKEND:-$DEFAULT_BACKEND}"
+LOG="$RUN_DIR/harness-run.log"
+OUT="$RUN_DIR/OUTPUT"
+
+now_utc() { date -u +%Y-%m-%dT%H:%M:%SZ; }
+log() { printf '%s\n' "$*" >> "$LOG"; }
+
+STARTED="$(now_utc)"
+log "--- attempt started_utc: ${STARTED}"
+log "run_dir: ${RUN_DIR}"
+log "shim: ${BASH_SOURCE[0]}"
+log "provision: containerized (bbi shim lane)"
+if [ "$BACKEND" != "$DEFAULT_BACKEND" ]; then
+  log "backend: ${BACKEND} (NONMEM_SHIM_BACKEND override — NOT the default container wrapper)"
+else
+  log "backend: ${BACKEND}"
+fi
+# Image resolution as the container wrapper reports it (no docker call).
+if [ -x "$DEFAULT_BACKEND" ]; then
+  while IFS= read -r line; do
+    case "$line" in image:*) log "$line" ;; esac
+  done < <("$DEFAULT_BACKEND" --show-config 2>/dev/null || true)
+fi
+log "argv: nmfe75 $*"
+
+# Parafile guard — stop before nmfe when the named file is absent.
+for a in "$@"; do
+  case "$a" in
+    -parafile=*)
+      pf="${a#-parafile=}"
+      case "$pf" in /*) pf_abs="$pf" ;; *) pf_abs="$RUN_DIR/$pf" ;; esac
+      if [ ! -f "$pf_abs" ]; then
+        msg="ERROR: parafile named in the nmfe arguments does not exist: ${pf_abs} — stopping before nmfe starts."
+        log "$msg"
+        log "exit_status: 2"
+        log "finished_utc: $(now_utc)"
+        echo "$msg" >&2
+        exit 2
+      fi
+      log "parafile: ${pf_abs} (present)"
+      ;;
+  esac
+done
+
+# Rotate an earlier OUTPUT instead of overwriting it.
+if [ -e "$OUT" ]; then
+  ts="$(date -u +%Y%m%dT%H%M%SZ)"
+  rotated="${OUT}.${ts}"
+  n=1
+  while [ -e "$rotated" ]; do rotated="${OUT}.${ts}.${n}"; n=$((n + 1)); done
+  mv "$OUT" "$rotated"
+  log "rotated_previous_output: ${rotated}"
+fi
+
+# Run the backend, mirroring its console (stdout + stderr) into OUTPUT
+# while still passing it through to bbi. The backend's exit status, not
+# tee's, is relayed.
+set +e
+"$BACKEND" "$RUN_DIR" nmfe75 "$@" 2>&1 | tee -a "$OUT"
+STATUS=${PIPESTATUS[0]}
+set -e
+
+log "output: ${OUT}"
+log "exit_status: ${STATUS}"
+log "finished_utc: $(now_utc)"
+exit "$STATUS"
